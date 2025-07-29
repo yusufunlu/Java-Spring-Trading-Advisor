@@ -6,6 +6,8 @@ Using Transactional after lock and in another class is on purpose to to solve ab
 
 Annotation and AOP : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/annotation
 Concurrent save/update : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/main/java/com/yusufu/interviewproject/service/ProductServiceImpl.java#L44
+Thread pool executor to force concurrency : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/test/java/com/yusufu/interviewproject/ProductServiceIntegrationTest.java#L39
+
 
 1. create a annotation
 2. use controller methods by ResponseEntity
