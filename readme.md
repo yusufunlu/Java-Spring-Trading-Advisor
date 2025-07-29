@@ -1,6 +1,8 @@
 
 I have defined custom annotation for logs and for entity delete
 Also implemented thread safe saveOrUpdate by id based lock in java side(could do same in db on row level but prefered java for demo)
+Also tested it thread safety by Thread Pool Executor and caught a case
+Using Transactional after lock and in another class is on purpose to to solve above problem  
 
 
 1. create a annotation
