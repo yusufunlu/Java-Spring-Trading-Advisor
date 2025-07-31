@@ -4,16 +4,16 @@ Also implemented thread safe saveOrUpdate by id based lock in java side(could do
 Also tested it thread safety by Thread Pool Executor and caught a case
 Using Transactional after lock and in another class is on purpose to to solve above problem  
 
-Annotation and AOP : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/annotation
+- [x]Annotation and AOP : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/annotation
 Concurrent save/update : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/main/java/com/yusufu/interviewproject/service/ProductServiceImpl.java#L44
 Thread pool executor to force concurrency : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/test/java/com/yusufu/interviewproject/ProductServiceIntegrationTest.java#L39
 Application Events : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/event
 
 Following features implemented or will be implemented
-1. create a annotation
-2. use controller methods by ResponseEntity
+- [x] create a annotation
+- [x] use controller methods by ResponseEntity
 3. use ResponseStatus in exceptions 
-4. use central exception handler
+- [x] use central exception handler
 5. split project to multiple config and contexes
 6. Spring Security Integration
 7. check json produce and consume
@@ -21,12 +21,12 @@ Following features implemented or will be implemented
 9. use record
 10. idompotent
 11. native query
-12. transactional
+- [x] transactional
 13. batch operation
-14. use threads
+- [x] use threads
 15. stream apis
-16. locks
-17. websocket
+- [x] locks
+- [x] websocket
 18. kafka
 19. distributed lock on redis or ignite
 20. dockerise
