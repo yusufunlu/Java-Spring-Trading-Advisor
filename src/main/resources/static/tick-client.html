@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Tick Data</title>
+</head>
+<body>
+<h2>Live Tick Data</h2>
+<ul id="tickList"></ul>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/ws/ticks");
+
+    socket.onopen = () => {
+        console.log("Connected");
+
+        setInterval(() => {
+            socket.send("ping");
+        }, 10000); // ping every 10s
+    };
+
+    socket.onmessage = (msg) => {
+        console.log("Received:", msg.data);
+    };
+</script>
+
+</body>
+</html>
