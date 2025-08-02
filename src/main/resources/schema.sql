@@ -1,7 +1,7 @@
 CREATE TABLE PRODUCT (
                          ID VARCHAR(36) PRIMARY KEY,
                          NAME VARCHAR(255),
-                         PRICE DOUBLE,
+                         PRICE DOUBLE PRECISION,
                          CATEGORY_ID VARCHAR(36),
                          created_at TIMESTAMP,
                          updated_at TIMESTAMP

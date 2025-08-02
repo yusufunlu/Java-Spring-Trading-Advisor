@@ -39,6 +39,7 @@ Following features implemented or will be implemented
 27. compare to Jhipster features
 28. flyway schema migration scripts
 29. users and security roles
+30. ssh private, public, rsa vs ed
 
 
 

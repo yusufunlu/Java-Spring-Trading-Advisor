@@ -34,12 +34,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'io.grpc:grpc-services'
     implementation 'io.sentry:sentry-spring-boot-starter-jakarta'
-    implementation 'org.flywaydb:flyway-core'
+    //implementation 'org.flywaydb:flyway-core'
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
     implementation 'org.springframework.grpc:spring-grpc-server-web-spring-boot-starter'
     implementation 'org.springframework.kafka:spring-kafka'
 
     runtimeOnly 'com.h2database:h2'
+    implementation 'org.postgresql:postgresql'
+// https://mvnrepository.com/artifact/com.influxdb/influxdb-client-java
+    implementation 'com.influxdb:influxdb-client-java:6.10.0'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
@@ -61,7 +64,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.686'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.apache.commons:commons-csv:1.10.0' // for writing CSV
-
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 }
 

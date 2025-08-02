@@ -1,0 +1,33 @@
+spring:
+    security:
+        user:
+            name: admin
+            password: secret123
+            roles: USER
+    datasource:
+        url: jdbc:h2:mem:mydb
+        driver-class-name: org.h2.Driver
+        username: sa
+        password: 1234
+    h2:
+        console:
+            enabled: true
+            path: /h2-console
+    jpa:
+        hibernate:
+            ddl-auto: none
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: false
+
+
+external:
+    polygon:
+        api_key: keyhere
+
+influxdb:
+    url: http://localhost:8086
+    token: yusuf_token
+    org: yusufu
+    bucket: javaspringfeatures2

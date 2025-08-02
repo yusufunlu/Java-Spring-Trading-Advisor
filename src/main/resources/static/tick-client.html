@@ -13,13 +13,28 @@
     socket.onopen = () => {
         console.log("Connected");
 
+        // Optional: send pings to keep connection alive
         setInterval(() => {
             socket.send("ping");
-        }, 10000); // ping every 10s
+        }, 10000);
     };
 
     socket.onmessage = (msg) => {
         console.log("Received:", msg.data);
+
+        const tickList = document.getElementById("tickList");
+
+        // Create new <li> with the tick data
+        const li = document.createElement("li");
+        li.textContent = msg.data;
+
+        // Add to the top of the list
+        tickList.prepend(li);
+
+        // Optionally limit number of items in list
+        if (tickList.children.length > 50) {
+            tickList.removeChild(tickList.lastChild);
+        }
     };
 </script>
 
