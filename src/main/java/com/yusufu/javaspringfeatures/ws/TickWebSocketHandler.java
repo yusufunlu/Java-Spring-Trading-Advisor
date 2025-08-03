@@ -86,7 +86,7 @@ public class TickWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Scheduled(fixedRate = 60000) // Run every minute to fetch new data
+/*    @Scheduled(fixedRate = 60000) // Run every minute to fetch new data
     public void broadcastHistoricalData() {
         System.out.println("Broadcasting data for: " + backfillDate);
         for (String ticker : TICKERS_TO_BROADCAST) {
@@ -105,7 +105,7 @@ public class TickWebSocketHandler extends TextWebSocketHandler {
         }
         // After broadcasting a day data move to the next day backward
         backfillDate = backfillDate.minusDays(1);
-    }
+    }*/
 
 
     private void broadcastMessage(String message) {

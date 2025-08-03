@@ -10,7 +10,7 @@ For further reference, please consider the following sections:
 * [Spring Boot Actuator](https://docs.spring.io/spring-boot/3.5.4/reference/actuator/index.html)
 * [Spring Batch](https://docs.spring.io/spring-boot/3.5.4/how-to/batch.html)
 * [Resilience4J](https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.5.4/reference/data/sql.html#data.sql.jpa-and-spring-data)
+* [Spring Data JPA](https://docs.spring.io/spring-boot/3.5.4/reference/data/sql.html#data-h2.sql.jpa-and-spring-data)
 * [Flyway Migration](https://docs.spring.io/spring-boot/3.5.4/how-to/data-initialization.html#howto.data-initialization.migration-tool.flyway)
 * [JDBC API](https://docs.spring.io/spring-boot/3.5.4/reference/data/sql.html)
 * [Spring for Apache Kafka](https://docs.spring.io/spring-boot/3.5.4/reference/messaging/kafka.html)

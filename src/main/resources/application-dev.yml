@@ -5,10 +5,10 @@ spring:
             schema-locations: classpath:schema-h2.sql
             data-locations: classpath:data-h2.sql
     datasource:
-        url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-        driver-class-name: org.h2.Driver
-        username: sa
-        password: as
+        url: ${POSTGRES_URL}
+        driver-class-name: org.postgresql.Driver
+        username: yusuf_db_user
+        password: ${POSTGRES_PASS}
     jpa:
         hibernate:
             ddl-auto: none

@@ -3,14 +3,11 @@ package com.yusufu.javaspringfeatures.ws;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.Bucket;
-import com.influxdb.client.domain.BucketRetentionRules;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.yusufu.javaspringfeatures.model.TickData;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,7 +52,7 @@ public class InfluxDBService {
     }
 
     public void writeTickData(String ticker, TickData tickData) {
-        try (WriteApi writeApi = influxDBClient.getWriteApi()) {
+        try {
             Point point = Point.measurement("stock_ticks")
                     .addTag("ticker", ticker)
                     .addTag("source", "polygon.io")
@@ -68,6 +65,7 @@ public class InfluxDBService {
                     .addField("vwap", tickData.getVwap())
                     .addField("transactions", tickData.getTransactions());
 
+            // Class-level writeApi kullan
             writeApi.writePoint(bucket, org, point);
             System.out.println("Successfully wrote tick data for " + ticker);
         } catch (Exception e) {
