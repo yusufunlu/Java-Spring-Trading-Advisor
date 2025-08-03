@@ -107,6 +107,7 @@ public class TickWebSocketHandler extends TextWebSocketHandler {
         backfillDate = backfillDate.minusDays(1);
     }
 
+
     private void broadcastMessage(String message) {
         sessionMap.values().stream()
                 .map(Pair::getLeft)

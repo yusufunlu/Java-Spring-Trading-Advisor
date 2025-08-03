@@ -3,11 +3,15 @@ package com.yusufu.javaspringfeatures.ws;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
+import com.influxdb.client.domain.Bucket;
+import com.influxdb.client.domain.BucketRetentionRules;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import com.yusufu.javaspringfeatures.model.TickData;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +29,7 @@ public class InfluxDBService {
     private final String org;
     private final String bucket;
     private final InfluxDBClient influxDBClient;
+    private final WriteApi writeApi;
 
     public InfluxDBService(@Value("${influxdb.url}") String url,
                            @Value("${influxdb.token}") String token,
@@ -35,6 +40,18 @@ public class InfluxDBService {
         this.org = org;
         this.bucket = bucket;
         this.influxDBClient = InfluxDBClientFactory.create(this.url, this.token.toCharArray(), this.org);
+        // Initialize the WriteApi once as a singleton
+        this.writeApi = influxDBClient.getWriteApi();
+    }
+
+    @PreDestroy
+    public void closeClient() {
+        if (writeApi != null) {
+            writeApi.close();
+        }
+        if (influxDBClient != null) {
+            influxDBClient.close();
+        }
     }
 
     public void writeTickData(String ticker, TickData tickData) {
@@ -58,10 +75,14 @@ public class InfluxDBService {
         }
     }
 
+    public void flushWriteApi() {
+        writeApi.flush();
+    }
+
     /**
      * Queries InfluxDB to get the latest timestamp for a specific ticker.
      * @param ticker The ticker symbol to query.
-     * @return The latest Instant for the ticker, or null if no data is found.
+     * @return The latest Instant for the ticker, or an empty list if no data is found.
      */
     public List<FluxRecord> getLatestRecordForTicker(String ticker) {
         String fluxQuery = String.format(

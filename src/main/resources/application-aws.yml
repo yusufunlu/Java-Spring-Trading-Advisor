@@ -5,10 +5,10 @@ spring:
             password: secret123
             roles: USER
     datasource:
-        url: jdbc:h2:mem:mydb
-        driver-class-name: org.h2.Driver
-        username: sa
-        password: 1234
+        url: someurl
+        driver-class-name: org.postgresql.Driver
+        username: yusuf_db_user
+        password: sth
     h2:
         console:
             enabled: true
@@ -20,7 +20,9 @@ spring:
         properties:
             hibernate:
                 format_sql: false
-
+    sql:
+      init:
+          mode: always
 
 external:
     polygon:
