@@ -1,0 +1,14 @@
+spring:
+    config:
+        import: optional:file:.env[.properties]
+        name: Java-Spring-Trading-Advisor
+    application:
+        name: Java-Spring-Trading-Advisor
+    profiles:
+        active: local
+springdoc:
+    swagger-ui:
+        path: /swagger-ui.html
+external:
+    polygon:
+        api_key: ${POLYGON_API_KEY}

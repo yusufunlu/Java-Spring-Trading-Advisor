@@ -65,7 +65,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.apache.commons:commons-csv:1.10.0' // for writing CSV
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
+    //ConfigDataProperties hit 3 times in first times it doesn't see .env file, I had to use this library instead of intercepting or fixing it
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
 
 dependencyManagement {

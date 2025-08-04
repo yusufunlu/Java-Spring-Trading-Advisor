@@ -17,14 +17,16 @@ CREATE TABLE CATEGORY (
 
 CREATE TABLE polygon_metadata (
                                   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                  ticker VARCHAR(10) NOT NULL,
+                                  ticker VARCHAR(255),
                                   query_count INT,
                                   results_count INT,
                                   adjusted BOOLEAN,
-                                  status VARCHAR(50),
-                                  request_id VARCHAR(100),
+                                  status VARCHAR(255),
+                                  request_id VARCHAR(255),
                                   count INT,
                                   next_url VARCHAR(1024),
-                                  for_date DATE NOT NULL,
-                                  retrieved_at TIMESTAMP NOT NULL
+                                  url_tried VARCHAR(255),
+                                  for_date DATE,
+                                  retrieved_at TIMESTAMP,
+                                  error_message VARCHAR(1024)
 );

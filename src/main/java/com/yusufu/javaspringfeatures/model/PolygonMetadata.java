@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Table(name = "polygon_metadata")
 @Data
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PolygonMetadata {
@@ -27,8 +29,9 @@ public class PolygonMetadata {
 
     @Column(length = 1024)
     private String nextUrl;
-
+    private String urlTried;
     private LocalDate forDate;
-
     private Instant retrievedAt;
+    @Column(length = 1024)
+    private String errorMessage;
 }

@@ -2,8 +2,8 @@ spring:
     sql:
         init:
             mode: always
-            schema-locations: classpath:schema-h2.sql
-            data-locations: classpath:data-h2.sql
+            schema-locations: classpath:schema-postgres.sql
+            data-locations: classpath:data-postgres.sql
     datasource:
         url: ${POSTGRES_URL}
         driver-class-name: org.postgresql.Driver
@@ -11,10 +11,10 @@ spring:
         password: ${POSTGRES_PASS}
     jpa:
         hibernate:
-            ddl-auto: none
+            ddl-auto: validate
     h2:
         console:
-            enabled: true
+            enabled: false
             path: /h2-console
 
     security:
@@ -23,12 +23,10 @@ spring:
             password: secret123
             roles: USER
 
-external:
-    polygon:
-        api_key: ${POLYGON_API_KEY}
+
 
 influxdb:
-    url: http://localhost:8086
-    token: yusuf_token
-    org: yusufu
-    bucket: financedata2
+    url: ${INFLUX_AWS_URL}
+    token: ${INFLUXDB_AWS_TOKEN}
+    org: Java-Spring-Trading-Advisor
+    bucket: TICK-AWS

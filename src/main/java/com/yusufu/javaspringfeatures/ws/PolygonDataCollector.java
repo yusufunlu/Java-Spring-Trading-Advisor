@@ -1,11 +1,12 @@
 package com.yusufu.javaspringfeatures.ws;
 
-
+import com.yusufu.javaspringfeatures.PolygonDataException;
 import com.yusufu.javaspringfeatures.model.PolygonMetadata;
 import com.yusufu.javaspringfeatures.model.PolygonResponse;
 import com.yusufu.javaspringfeatures.model.TickData;
 import com.yusufu.javaspringfeatures.repo.PolygonMetadataRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PolygonDataCollector {
@@ -31,69 +32,106 @@ public class PolygonDataCollector {
     private String apiKey;
     private static final String TICKER = "AAPL";
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 12000)
     public void backfillWithRetry() {
-        LocalDate current = getLastProcessedDate(TICKER).plusDays(1);
+        LocalDate lastProcessedDate = getLastProcessedDate(TICKER);
+        LocalDate dateToFetch = lastProcessedDate.plusDays(1);
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
 
-        while (!current.isAfter(today)) {
-            if (isWeekend(current)) {
-                current = current.plusDays(1);
-                continue;
+        if (dateToFetch.isAfter(today)) {
+            System.out.println("After today's data can not be fetched " + dateToFetch);
+            return;
+        }
+
+        String url = null;
+        try {
+            url = buildPolygonUrl(TICKER, dateToFetch);
+            PolygonResponse response = fetchPolygonData(TICKER, dateToFetch);
+
+            System.out.println("Successfully fetched tick data for " + dateToFetch);
+
+            if (response.getResults() == null || response.getResults().isEmpty()) {
+                saveMetadata(response, dateToFetch, url, null);
+                return;
             }
 
-            try {
-                PolygonResponse response = fetchPolygonData(TICKER, current);
-
-                if (response.getResults() == null || response.getResults().isEmpty()) {
-                    if (current.equals(today)) {
-                        return;
-                    } else {
-                        current = current.plusDays(1);
-                        continue;
-                    }
-                }
-
-                for (TickData tick : response.getResults()) {
-                    influxDBService.writeTickData(TICKER, tick);
-                }
-                influxDBService.flushWriteApi();
-
-                PolygonMetadata metadata = PolygonMetadata.builder()
-                        .ticker(response.getTicker())
-                        .queryCount(response.getQueryCount())
-                        .resultsCount(response.getResultsCount())
-                        .adjusted(response.isAdjusted())
-                        .status(response.getStatus())
-                        .requestId(response.getRequestId())
-                        .count(response.getCount())
-                        .nextUrl(response.getNextUrl())
-                        .forDate(current)
-                        .retrievedAt(Instant.now())
-                        .build();
-
-                metadataRepository.save(metadata);
-
-            } catch (HttpClientErrorException.TooManyRequests e) {
-                try {
-                    Thread.sleep(30000);
-                } catch (InterruptedException ignored) {}
-                continue;
-            } catch (Exception e) {
+            //It is using async writing
+            //registered  event listener already to catch the async exception which try/catch can't do it here
+            for (TickData tick : response.getResults()) {
+                influxDBService.writeTickData(TICKER, tick);
             }
+            influxDBService.checkAndThrowIfError();
 
-            current = current.plusDays(1);
+            saveMetadata(response, dateToFetch, url, null);
+            System.out.println("Successfully saved metadata data for " + dateToFetch);
+
+        } catch (HttpClientErrorException.Forbidden e) {
+            saveMetadata(null, dateToFetch, url, e.getMessage());
+            throw new PolygonDataException(e.getMessage());
+        } catch (HttpClientErrorException.Unauthorized e) {
+            saveMetadata(null, dateToFetch, url, e.getMessage());
+            throw new PolygonDataException(e.getMessage());
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            saveMetadata(null, dateToFetch, url, e.getMessage());
+            throw new PolygonDataException(e.getMessage());
+        } catch (Exception e) {
+            saveMetadata(null, dateToFetch, url, e.getMessage().substring(0, 1000));
+            //TODO: Global exception handler is not able to catch this, fix it
+            throw new PolygonDataException(e.getMessage());
         }
     }
 
+    private void saveMetadata( PolygonResponse response, LocalDate date, String url, String errorMessage) {
+        if(response!=null){
+            PolygonMetadata metadata = PolygonMetadata.builder()
+                    .ticker(response.getTicker())
+                    .queryCount(response.getQueryCount())
+                    .resultsCount(response.getResultsCount())
+                    .adjusted(response.isAdjusted())
+                    .status(response.getStatus())
+                    .requestId(response.getRequestId())
+                    .count(response.getCount())
+                    .nextUrl(response.getNextUrl())
+                    .forDate(date)
+                    .retrievedAt(Instant.now())
+                    .urlTried(url)
+                    .errorMessage(errorMessage)
+                    .build();
+            metadataRepository.save(metadata);
+        } else {
+            PolygonMetadata metadata = PolygonMetadata.builder()
+                    .ticker(TICKER)
+                    .queryCount(0)
+                    .resultsCount(0)
+                    .adjusted(false)
+                    .status("FAILED")
+                    .requestId("N/A")
+                    .count(0)
+                    .nextUrl(null)
+                    .forDate(date)
+                    .retrievedAt(Instant.now())
+                    .urlTried(url)
+                    .errorMessage(errorMessage)
+                    .build();
+            metadataRepository.save(metadata);
+        }
+
+
+    }
+
     private PolygonResponse fetchPolygonData(String ticker, LocalDate date) {
-        String url = String.format("https://api.polygon.io/v2/aggs/ticker/%s/range/1/minute/%s/%s?adjusted=true&sort=asc&limit=50000&apiKey=%s",
+        String url = buildPolygonUrl(ticker, date);
+        return restTemplate.getForObject(url, PolygonResponse.class);
+    }
+
+    private String buildPolygonUrl(String ticker, LocalDate date) {
+        return String.format(
+                "https://api.polygon.io/v2/aggs/ticker/%s/range/1/minute/%s/%s?adjusted=true&sort=asc&limit=50000&apiKey=_eMvjl5ZlzXgQw7DxV2nq9v2YiMyh5Ia",
                 ticker,
                 date.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 date.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                apiKey);
-
-        return restTemplate.getForObject(url, PolygonResponse.class);
+                apiKey
+        );
     }
 
     private boolean isWeekend(LocalDate date) {
@@ -104,6 +142,6 @@ public class PolygonDataCollector {
     private LocalDate getLastProcessedDate(String ticker) {
         return metadataRepository.findTopByTickerOrderByForDateDesc(ticker)
                 .map(PolygonMetadata::getForDate)
-                .orElse(LocalDate.of(2025, 1, 1).minusDays(1));
+                .orElse(LocalDate.now().minusMonths(2));
     }
 }

@@ -3,13 +3,21 @@ package com.yusufu.javaspringfeatures.ws;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
+import com.influxdb.client.WriteOptions;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.client.write.events.WriteErrorEvent;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import com.yusufu.javaspringfeatures.PolygonDataException;
 import com.yusufu.javaspringfeatures.model.TickData;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,10 +25,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class InfluxDBService {
 
+    private static final Logger log = LoggerFactory.getLogger(InfluxDBService.class);
     private final String url;
     private final String token;
     private final String org;
@@ -28,6 +38,7 @@ public class InfluxDBService {
     private final InfluxDBClient influxDBClient;
     private final WriteApi writeApi;
 
+    private final AtomicReference<Throwable> lastWriteError = new AtomicReference<>();
     public InfluxDBService(@Value("${influxdb.url}") String url,
                            @Value("${influxdb.token}") String token,
                            @Value("${influxdb.org}") String org,
@@ -38,7 +49,24 @@ public class InfluxDBService {
         this.bucket = bucket;
         this.influxDBClient = InfluxDBClientFactory.create(this.url, this.token.toCharArray(), this.org);
         // Initialize the WriteApi once as a singleton
-        this.writeApi = influxDBClient.getWriteApi();
+        this.writeApi = influxDBClient.getWriteApi(
+                WriteOptions.builder()
+                        .batchSize(500)
+                        .flushInterval(1000)
+                        .build()
+        );
+        writeApi.listenEvents(WriteErrorEvent.class, event -> {
+            //log.warn("InfluxDB write error: {}", event.getThrowable().getMessage());
+            lastWriteError.set(event.getThrowable());
+        });
+    }
+
+    public void checkAndThrowIfError() {
+        Throwable t = lastWriteError.getAndSet(null);
+        if (t != null) {
+            //TODO: Global exception handler is not able to catch this, fix it
+            throw new PolygonDataException("Influx write failed: " + t.getMessage());
+        }
     }
 
     @PreDestroy
@@ -67,7 +95,7 @@ public class InfluxDBService {
 
             // Class-level writeApi kullan
             writeApi.writePoint(bucket, org, point);
-            System.out.println("Successfully wrote tick data for " + ticker);
+            //System.out.println("Successfully wrote tick data for " + ticker);
         } catch (Exception e) {
             System.err.println("Failed to write to InfluxDB: " + e.getMessage());
         }
