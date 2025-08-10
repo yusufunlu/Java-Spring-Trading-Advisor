@@ -32,7 +32,7 @@ public class PolygonDataCollector {
     private String apiKey;
     private static final String TICKER = "AAPL";
 
-    @Scheduled(fixedRate = 12000)
+    @Scheduled(fixedRate = 12*1000)
     public void backfillWithRetry() {
         LocalDate lastProcessedDate = getLastProcessedDate(TICKER);
         LocalDate dateToFetch = lastProcessedDate.plusDays(1);
@@ -142,6 +142,6 @@ public class PolygonDataCollector {
     private LocalDate getLastProcessedDate(String ticker) {
         return metadataRepository.findTopByTickerOrderByForDateDesc(ticker)
                 .map(PolygonMetadata::getForDate)
-                .orElse(LocalDate.now().minusMonths(2));
+                .orElse(LocalDate.now().minusMonths(1));
     }
 }

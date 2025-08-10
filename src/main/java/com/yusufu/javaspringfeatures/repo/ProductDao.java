@@ -13,11 +13,14 @@ import java.util.Optional;
 @Repository
 public class ProductDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+    private final ProductRepository productRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    public ProductDao(EntityManager em, ProductRepository productRepository) {
+        this.em = em;
+        this.productRepository = productRepository;
+    }
     public List<Product> findAll() {
         return productRepository.findAll();
     }

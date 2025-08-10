@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: java-spring-trading-advisor
+#    container_name: java-spring-trading-advisor-container
+    ports:
+      - "8080:8080"
+    env_file: .env

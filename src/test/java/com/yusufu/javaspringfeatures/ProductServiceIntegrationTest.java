@@ -3,13 +3,17 @@ package com.yusufu.javaspringfeatures;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.yusufu.javaspringfeatures.model.entity.Product;
+import com.yusufu.javaspringfeatures.repo.ProductDao;
 import com.yusufu.javaspringfeatures.repo.ProductRepository;
 import com.yusufu.javaspringfeatures.service.ProductService;
+import com.yusufu.javaspringfeatures.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.function.Function;
 
@@ -17,7 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
 
-@SpringBootTest
+@DataJpaTest
+@Import({ProductDao.class, ProductServiceImpl.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ProductServiceIntegrationTest {
 

@@ -16,7 +16,7 @@ public class EnvPrinter {
         this.env = env;
     }
 
-    //@PostConstruct
+    @PostConstruct
     public void printAll() {
         System.out.println("---- SPRING ENV VARIABLES ----");
 
