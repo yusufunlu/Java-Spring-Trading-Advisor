@@ -10,10 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-public class InterviewProjectApplication {
+public class TradingAdvisorApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(InterviewProjectApplication.class, args);
+        SpringApplication.run(TradingAdvisorApp.class, args);
     }
 
 }
