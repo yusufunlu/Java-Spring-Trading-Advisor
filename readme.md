@@ -4,10 +4,10 @@ Also implemented thread safe saveOrUpdate by id based lock in java side(could do
 Also tested it thread safety by Thread Pool Executor and caught a case
 Using Transactional after lock and in another class is on purpose to to solve above problem  
 
-- [x]Annotation and AOP : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/annotation
-Concurrent save/update : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/main/java/com/yusufu/interviewproject/service/ProductServiceImpl.java#L44
-Thread pool executor to force concurrency : https://github.com/yusufunlu/Java-Spring-Features/blob/main/src/test/java/com/yusufu/interviewproject/ProductServiceIntegrationTest.java#L39
-Application Events : https://github.com/yusufunlu/Java-Spring-Features/tree/main/src/main/java/com/yusufu/interviewproject/event
+- [x]Annotation and AOP 
+- [x]Concurrent save/update 
+- [x]Thread pool executor to force concurrency 
+- [x]Application Events 
 
 Following features implemented or will be implemented
 - [x] create a annotation
