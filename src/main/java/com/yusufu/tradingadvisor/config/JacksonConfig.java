@@ -12,7 +12,7 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        // Optional: disable timestamps if you prefer ISO strings
+        // Optional: disable timestamps if prefer ISO strings
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
